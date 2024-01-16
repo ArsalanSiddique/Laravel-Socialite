@@ -79,6 +79,11 @@
                                         {{ __('Login With Facebook') }}
                                     </button>
                                 </a>
+                                <a href="{{ url('auth/github') }}">
+                                    <button type="button" class="btn btn-secondary">
+                                        {{ __('Login With Github') }}
+                                    </button>
+                                </a>
                             </div>
                         </div>
                     </form>

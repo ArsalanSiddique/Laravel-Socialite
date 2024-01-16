@@ -57,15 +57,26 @@ class LoginController extends Controller
                 Auth::login($finduser);
                 return redirect('/home');
             } else {
-                $newUser                        = new User;
-                $newUser->google_provider_id    = $user->getId();
-                $newUser->name                  = $user->getName();
-                $newUser->email                 = $user->getEmail();
-                $newUser->email_verified_at     = now();
-                // $newUser->avatar            = $user->getAvatar();
-                $newUser->save();
+                $finduser   = User::where('email', $user->getEmail())->first();
+                if ($finduser) {
 
-                Auth::login($newUser);
+                    $finduser->google_provider_id = $user->getId();
+                    // $newUser->avatar            = $user->getAvatar();
+                    $finduser->update();
+
+                    Auth::login($finduser);
+                } else {
+
+                    $newUser                        = new User;
+                    $newUser->google_provider_id    = $user->getId();
+                    $newUser->name                  = $user->getName();
+                    $newUser->email                 = $user->getEmail();
+                    $newUser->email_verified_at     = now();
+                    // $newUser->avatar            = $user->getAvatar();
+                    $newUser->save();
+
+                    Auth::login($newUser);
+                }
             }
         } catch (Exception $e) {
             return redirect('auth/google');
@@ -116,6 +127,53 @@ class LoginController extends Controller
             }
         } catch (Exception $e) {
             return redirect('auth/facebook');
+        }
+
+        return redirect('/home');
+    }
+
+    public function redirectToGithub()
+    {
+        return Socialite::driver('github')->redirect();
+    }
+
+    public function handleGithubCallback()
+    {
+        try {
+
+            $user       = Socialite::driver('github')->stateless()->user();
+            $finduser   = User::where('github_provider_id', $user->id)->first();
+
+            if ($finduser) {
+                Auth::login($finduser);
+                return redirect('/home');
+            } else {
+
+
+                $finduser   = User::where('email', $user->getEmail())->first();
+                if ($finduser) {
+
+                    $finduser->github_provider_id   = $user->getId();
+                    // $newUser->avatar            = $user->getAvatar();
+                    $finduser->update();
+
+                    Auth::login($finduser);
+                } else {
+
+                    $newUser                        = new User;
+                    $newUser->github_provider_id    = $user->getId();
+                    $newUser->name                  = $user->getName();
+                    $newUser->email                 = $user->getEmail();
+                    $newUser->email_verified_at     = now();
+                    // $newUser->avatar            = $user->getAvatar();
+                    $newUser->save();
+
+                    Auth::login($newUser);
+                }
+
+            }
+        } catch (Exception $e) {
+            return redirect('auth/github');
         }
 
         return redirect('/home');

@@ -22,6 +22,7 @@ return new class extends Migration
             
             $table->string('google_provider_id')->nullable();
             $table->string('facebook_provider_id')->nullable();
+            $table->string('github_provider_id')->nullable();
         });
     }
 
